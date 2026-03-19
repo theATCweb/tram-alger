@@ -36,7 +36,7 @@ class TramActionButton extends StatelessWidget {
                     ),
                   ),
                 ] else ...[
-                  const Icon(Icons.directions_tram, size: 24),
+                  const Icon(Icons.tram, size: 24),
                   const SizedBox(width: 12),
                   const Text(
                     'انا داخل الترام الان',
@@ -109,7 +109,7 @@ class _PulsingDotState extends State<_PulsingDot>
           height: 12,
           decoration: BoxDecoration(
             shape: BoxShape.circle,
-            color: Colors.white.withOpacity(0.5 + _controller.value * 0.5),
+            color: Colors.white.withValues(alpha: 0.5 + _controller.value * 0.5),
           ),
         );
       },

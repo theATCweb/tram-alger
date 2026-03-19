@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../../providers/connectivity_provider.dart';
+import 'package:tram_alger/providers/connectivity_provider.dart';
 
 class OfflineBanner extends StatelessWidget {
   const OfflineBanner({super.key});

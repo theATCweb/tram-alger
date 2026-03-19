@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../providers/stations_provider.dart';
 import '../../providers/eta_provider.dart';
-import '../../providers/connectivity_provider.dart';
 import '../../providers/gps_tracking_provider.dart';
 import '../station_detail/station_detail_screen.dart';
 import 'widgets/offline_banner.dart';
@@ -53,7 +52,7 @@ class _HomeScreenState extends State<HomeScreen> {
               'Ligne 1',
               style: TextStyle(
                 fontSize: 12,
-                color: Colors.white.withOpacity(0.8),
+                color: Colors.white.withValues(alpha: 0.8),
               ),
             ),
           ],
@@ -74,7 +73,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     gps.stopTracking();
                   }
                 },
-                activeColor: Colors.white,
+              activeTrackColor: Colors.white,
               );
             },
           ),
