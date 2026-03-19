@@ -28,8 +28,6 @@ async def lifespan(app: FastAPI):
     except Exception as e:
         print(f"WARNING: Database not available at startup: {e}")
         print("App will start anyway - endpoints will return 503 until DB connects")
-    import subprocess
-    subprocess.Popen(["python", "scripts/seed_db.py"])
     yield
 
 
