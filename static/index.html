@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tram Alger - Test Dashboard</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f5f5f5;
+            color: #333;
+            min-height: 100vh;
+        }
+        header {
+            background: #1b5e20;
+            color: white;
+            padding: 15px 20px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+        header h1 { font-size: 1.4rem; font-weight: 600; }
+        header p { font-size: 0.85rem; opacity: 0.9; margin-top: 3px; }
+        .status-bar {
+            display: flex;
+            gap: 15px;
+            padding: 12px 20px;
+            background: #e8f5e9;
+            border-bottom: 1px solid #c8e6c9;
+            font-size: 0.85rem;
+            flex-wrap: wrap;
+        }
+        .status-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #999;
+        }
+        .status-dot.connected { background: #4caf50; }
+        .status-dot.disconnected { background: #f44336; }
+        .main-container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .controls {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .btn-primary {
+            background: #1b5e20;
+            color: white;
+        }
+        .btn-primary:hover { background: #2e7d32; }
+        .btn-secondary {
+            background: #e8f5e9;
+            color: #1b5e20;
+            border: 1px solid #a5d6a7;
+        }
+        .btn-secondary:hover { background: #c8e6c9; }
+        .btn-simulate {
+            background: #ff9800;
+            color: white;
+        }
+        .btn-simulate:hover { background: #f57c00; }
+        .stations-list {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        .station-item {
+            padding: 14px 20px;
+            border-bottom: 1px solid #eee;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: background 0.15s;
+        }
+        .station-item:hover { background: #f5f5f5; }
+        .station-item.selected { background: #e8f5e9; border-left: 3px solid #1b5e20; }
+        .station-item:last-child { border-bottom: none; }
+        .station-name { font-weight: 500; }
+        .station-name-ar {
+            font-size: 0.85rem;
+            color: #666;
+            margin-top: 2px;
+            direction: rtl;
+        }
+        .station-seq {
+            background: #f5f5f5;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            color: #666;
+        }
+        .terminal-badge {
+            background: #1b5e20;
+            color: white;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            margin-left: 8px;
+        }
+        .eta-panel {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            padding: 24px;
+            margin-top: 20px;
+            display: none;
+        }
+        .eta-panel.visible { display: block; }
+        .eta-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: #1b5e20;
+        }
+        .eta-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 15px;
+        }
+        .eta-card {
+            background: #f9f9f9;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        .eta-label { font-size: 0.8rem; color: #888; margin-bottom: 5px; }
+        .eta-value { font-size: 1.3rem; font-weight: 600; color: #333; }
+        .eta-value.highlight { color: #1b5e20; font-size: 1.5rem; }
+        .source-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+        .source-gps { background: #c8e6c9; color: #1b5e20; }
+        .source-schedule { background: #fff3e0; color: #e65100; }
+        .source-none { background: #eee; color: #666; }
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+        .error-msg {
+            background: #ffebee;
+            color: #c62828;
+            padding: 12px;
+            border-radius: 6px;
+            margin-top: 15px;
+        }
+        @media (max-width: 600px) {
+            .station-item { padding: 12px 15px; }
+            .eta-grid { grid-template-columns: 1fr 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Tram Alger - Test Dashboard</h1>
+        <p>Algiers Tramway Line 1 - ETA Platform</p>
+    </header>
+
+    <div class="status-bar" id="statusBar">
+        <div class="status-item">
+            <div class="status-dot" id="dbDot"></div>
+            <span>DB: <span id="dbStatus">Checking...</span></span>
+        </div>
+        <div class="status-item">
+            <div class="status-dot" id="redisDot"></div>
+            <span>Redis: <span id="redisStatus">Checking...</span></span>
+        </div>
+        <div class="status-item">
+            <span>Pings/Hour: <span id="pingCount">--</span></span>
+        </div>
+        <div class="status-item">
+            <span>Stations: <span id="stationCount">--</span></span>
+        </div>
+    </div>
+
+    <div class="main-container">
+        <div class="controls">
+            <button class="btn-primary" onclick="loadStations()">Refresh Stations</button>
+            <button class="btn-simulate" onclick="runSimulator()">Run GPS Simulator</button>
+            <select id="directionSelect" style="padding: 10px; border-radius: 6px; border: 1px solid #ccc;">
+                <option value="0">Direction: Outbound</option>
+                <option value="1">Direction: Inbound</option>
+            </select>
+        </div>
+
+        <div class="stations-list" id="stationsList">
+            <div class="loading">Loading stations...</div>
+        </div>
+
+        <div class="eta-panel" id="etaPanel">
+            <div class="eta-title" id="etaTitle">ETA Results</div>
+            <div class="eta-grid">
+                <div class="eta-card">
+                    <div class="eta-label">Time Away</div>
+                    <div class="eta-value highlight" id="etaTime">--</div>
+                </div>
+                <div class="eta-card">
+                    <div class="eta-label">ETA (ISO)</div>
+                    <div class="eta-value" id="etaIso">--</div>
+                </div>
+                <div class="eta-card">
+                    <div class="eta-label">Source</div>
+                    <div class="eta-value" id="etaSource">--</div>
+                </div>
+                <div class="eta-card">
+                    <div class="eta-label">Confidence</div>
+                    <div class="eta-value" id="etaConfidence">--</div>
+                </div>
+            </div>
+            <div id="etaError" class="error-msg" style="display:none;"></div>
+        </div>
+    </div>
+
+    <script>
+        let selectedStation = null;
+        let autoRefreshInterval = null;
+        let stationsData = [];
+
+        async function api(endpoint, options = {}) {
+            try {
+                const response = await fetch('http://localhost:8000' + endpoint, {
+                    ...options,
+                    headers: { 'Content-Type': 'application/json', ...options.headers }
+                });
+                return await response.json();
+            } catch (e) {
+                console.error('API Error:', e);
+                return null;
+            }
+        }
+
+        async function checkStatus() {
+            const stats = await api('/admin/stats');
+            if (stats) {
+                document.getElementById('dbDot').className = 'status-dot ' + (stats.db_connected ? 'connected' : 'disconnected');
+                document.getElementById('redisDot').className = 'status-dot ' + (stats.redis_connected ? 'connected' : 'disconnected');
+                document.getElementById('dbStatus').textContent = stats.db_connected ? 'Connected' : 'Disconnected';
+                document.getElementById('redisStatus').textContent = stats.redis_connected ? 'Connected' : 'Disconnected';
+                document.getElementById('pingCount').textContent = stats.gps_pings_last_hour;
+                document.getElementById('stationCount').textContent = stats.total_stations;
+            }
+        }
+
+        async function loadStations() {
+            const container = document.getElementById('stationsList');
+            container.innerHTML = '<div class="loading">Loading stations...</div>';
+
+            const stations = await api('/stations/?route_id=1');
+            if (!stations || stations.length === 0) {
+                container.innerHTML = '<div class="loading">No stations found. Check DB connection.</div>';
+                return;
+            }
+
+            stationsData = stations;
+            container.innerHTML = stations.map(s => `
+                <div class="station-item" onclick="selectStation(${s.id}, '${s.name.replace(/'/g, "\\'")}')" id="station-${s.id}">
+                    <div>
+                        <div class="station-name">
+                            ${s.name}
+                            ${s.is_terminal ? '<span class="terminal-badge">TERMINAL</span>' : ''}
+                        </div>
+                        ${s.name_ar ? `<div class="station-name-ar">${s.name_ar}</div>` : ''}
+                    </div>
+                    <div style="display:flex;align-items:center;gap:10px;">
+                        <span class="station-seq">#${s.sequence}</span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function selectStation(id, name) {
+            document.querySelectorAll('.station-item').forEach(el => el.classList.remove('selected'));
+            const el = document.getElementById('station-' + id);
+            if (el) el.classList.add('selected');
+
+            selectedStation = { id, name };
+            document.getElementById('etaPanel').classList.add('visible');
+            document.getElementById('etaTitle').textContent = 'ETA: ' + name;
+            document.getElementById('etaTime').textContent = 'Loading...';
+            document.getElementById('etaIso').textContent = '--';
+            document.getElementById('etaSource').textContent = '--';
+            document.getElementById('etaConfidence').textContent = '--';
+            document.getElementById('etaError').style.display = 'none';
+
+            fetchETA(id);
+
+            if (autoRefreshInterval) clearInterval(autoRefreshInterval);
+            autoRefreshInterval = setInterval(() => fetchETA(id), 30000);
+        }
+
+        async function fetchETA(stationId) {
+            const direction = parseInt(document.getElementById('directionSelect').value);
+            const result = await api(`/eta/${stationId}?direction=${direction}&route_id=1`);
+
+            if (result) {
+                if (result.seconds_away !== null) {
+                    const mins = Math.floor(result.seconds_away / 60);
+                    const secs = result.seconds_away % 60;
+                    document.getElementById('etaTime').textContent = `${mins}m ${secs}s`;
+                    document.getElementById('etaIso').textContent = result.eta_iso ? result.eta_iso.substring(11, 19) : '--';
+                } else {
+                    document.getElementById('etaTime').textContent = 'No data';
+                }
+
+                const badgeClass = result.source === 'gps' ? 'source-gps' : result.source === 'schedule' ? 'source-schedule' : 'source-none';
+                document.getElementById('etaSource').innerHTML = `<span class="source-badge ${badgeClass}">${result.source.toUpperCase()}</span>`;
+                document.getElementById('etaConfidence').textContent = (result.confidence * 100).toFixed(0) + '%';
+
+                if (result.message) {
+                    document.getElementById('etaError').textContent = result.message;
+                    document.getElementById('etaError').style.display = 'block';
+                }
+            } else {
+                document.getElementById('etaError').textContent = 'Failed to fetch ETA. Is the server running?';
+                document.getElementById('etaError').style.display = 'block';
+            }
+        }
+
+        async function runSimulator() {
+            const pings = [];
+            const deviceToken = 'test-' + Math.random().toString(36).substr(2, 9);
+            const baseLat = 36.75 + (Math.random() - 0.5) * 0.08;
+            const baseLng = 3.10 + (Math.random() - 0.5) * 0.1;
+
+            for (let i = 0; i < 5; i++) {
+                pings.push({
+                    device_token: deviceToken,
+                    lat: baseLat + (Math.random() - 0.5) * 0.02,
+                    lng: baseLng + (Math.random() - 0.5) * 0.02,
+                    accuracy_m: 10 + Math.random() * 20,
+                    speed_kmh: 15 + Math.random() * 20,
+                    bearing: Math.floor(Math.random() * 360),
+                    route_id: 1,
+                    direction: 0
+                });
+            }
+
+            let success = 0;
+            for (const ping of pings) {
+                const result = await api('/gps/ping', {
+                    method: 'POST',
+                    body: JSON.stringify(ping)
+                });
+                if (result && result.accepted) success++;
+                await new Promise(r => setTimeout(r, 100));
+            }
+
+            alert(`GPS Simulator: ${success}/5 pings sent successfully!`);
+            checkStatus();
+            if (selectedStation) fetchETA(selectedStation.id);
+        }
+
+        document.getElementById('directionSelect').addEventListener('change', () => {
+            if (selectedStation) fetchETA(selectedStation.id);
+        });
+
+        checkStatus();
+        loadStations();
+        setInterval(checkStatus, 30000);
+    </script>
+</body>
+</html>
