@@ -128,3 +128,12 @@ async def root():
     if os.path.exists(index_path):
         return FileResponse(index_path)
     return {"message": "Tram Alger API - static/index.html not found"}
+
+
+@app.get("/landing", include_in_schema=False)
+async def landing():
+    """Serve the landing page."""
+    landing_path = os.path.join(os.path.dirname(__file__), "landing.html")
+    if os.path.exists(landing_path):
+        return FileResponse(landing_path)
+    return {"error": "landing.html not found"}
