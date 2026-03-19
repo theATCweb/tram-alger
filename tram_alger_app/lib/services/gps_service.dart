@@ -25,8 +25,10 @@ class GpsService {
 
   void startTracking(void Function(Position) onPosition) {
     _positionSubscription = Geolocator.getPositionStream(
-      desiredAccuracy: LocationAccuracy.medium,
-      distanceFilter: 30,
+      locationSettings: const LocationSettings(
+        accuracy: LocationAccuracy.medium,
+        distanceFilter: 30,
+      ),
     ).listen((position) {
       _lastPosition = position;
       onPosition(position);
@@ -48,7 +50,7 @@ class GpsService {
       if (!hasPermission) return null;
       return await Geolocator.getCurrentPosition(
         locationSettings: const LocationSettings(
-          accuracy: LocationAccuracy.high,
+          accuracy: LocationAccuracy.medium,
         ),
       );
     } catch (e) {

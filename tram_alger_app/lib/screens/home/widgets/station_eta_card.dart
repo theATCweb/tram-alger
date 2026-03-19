@@ -84,8 +84,8 @@ class StationEtaCard extends StatelessWidget {
                         style: TextStyle(
                           color: Colors.grey[600],
                           fontSize: 13,
-                          direction: TextDirection.rtl,
                         ),
+                        textDirection: TextDirection.rtl,
                       ),
                     const SizedBox(height: 4),
                     Row(
