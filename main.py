@@ -25,6 +25,16 @@ async def lifespan(app: FastAPI):
         async with engine.begin() as conn:
             await conn.run_sync(Base.metadata.create_all)
         print("Database tables ready")
+
+        import subprocess
+        result = subprocess.run(
+            ["python", "scripts/seed_db.py"],
+            capture_output=True, text=True, timeout=60
+        )
+        if result.returncode == 0:
+            print("Database seeding completed")
+        else:
+            print(f"Seeding output: {result.stdout[:200]}")
     except Exception as e:
         print(f"WARNING: Database not available at startup: {e}")
         print("App will start anyway - endpoints will return 503 until DB connects")
