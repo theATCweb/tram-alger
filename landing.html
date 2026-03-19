@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>تطبيق ترام الجزائر</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: 'Segoe UI', Arial, sans-serif; background: #f0f4f0; color: #1a1a1a; }
+header { background: #00695C; color: white; padding: 30px 20px; text-align: center; }
+header h1 { font-size: 2rem; margin-bottom: 8px; }
+header p { font-size: 1.1rem; opacity: 0.9; }
+.container { max-width: 700px; margin: 0 auto; padding: 20px; }
+.card { background: white; border-radius: 12px; padding: 24px; margin: 16px 0; box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+.card h2 { color: #00695C; margin-bottom: 16px; font-size: 1.2rem; }
+.step { display: flex; align-items: flex-start; gap: 16px; margin: 12px 0; }
+.step-num { background: #00695C; color: white; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; flex-shrink: 0; }
+.download-btn { display: block; background: #00695C; color: white; text-align: center; padding: 16px; border-radius: 10px; font-size: 1.2rem; text-decoration: none; margin: 20px 0; }
+.feedback-btn { display: block; background: #FF8F00; color: white; text-align: center; padding: 14px; border-radius: 10px; font-size: 1.1rem; text-decoration: none; margin: 10px 0; }
+.badge { display: inline-block; background: #e8f5e9; color: #00695C; padding: 4px 12px; border-radius: 20px; font-size: 0.85rem; margin: 4px; }
+.warning { background: #fff3e0; border-right: 4px solid #FF8F00; padding: 12px 16px; border-radius: 8px; font-size: 0.95rem; margin: 12px 0; }
+footer { text-align: center; padding: 30px; color: #666; font-size: 0.9rem; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>🚃 ترام الجزائر</h1>
+  <p>تطبيق تتبع الترامواي في الوقت الحقيقي — خط 1</p>
+  <br>
+  <span class="badge">Beta تجريبي</span>
+  <span class="badge">مجاني 100%</span>
+</header>
+
+<div class="container">
+
+  <div class="card">
+    <h2>📥 تحميل التطبيق</h2>
+    <a href="app-release.apk" class="download-btn">⬇️ تحميل التطبيق (Android)</a>
+    <div class="warning">⚠️ عند التثبيت: اسمح بـ "تثبيت تطبيقات من مصادر غير معروفة"</div>
+  </div>
+
+  <div class="card">
+    <h2>📲 طريقة التثبيت</h2>
+    <div class="step"><div class="step-num">1</div><div>حمّل ملف APK من الزر أعلاه</div></div>
+    <div class="step"><div class="step-num">2</div><div>افتح الملف من مجلد التنزيلات</div></div>
+    <div class="step"><div class="step-num">3</div><div>اضغط "تثبيت" — إذا ظهر تحذير اضغط "تثبيت على أي حال"</div></div>
+    <div class="step"><div class="step-num">4</div><div>افتح التطبيق وانتظر تحميل المحطات</div></div>
+  </div>
+
+  <div class="card">
+    <h2>🎯 كيف تستخدم التطبيق</h2>
+    <div class="step"><div class="step-num">1</div><div>افتح التطبيق — سترى قائمة المحطات مع وقت الوصول المتوقع</div></div>
+    <div class="step"><div class="step-num">2</div><div>اضغط على أي محطة لرؤية التفاصيل</div></div>
+    <div class="step"><div class="step-num">3</div><div>عندما تكون داخل الترام اضغط زر <strong>"أنا داخل الترام الآن"</strong></div></div>
+    <div class="step"><div class="step-num">4</div><div>موقعك يُرسل بشكل مجهول لتحسين دقة التوقعات للجميع</div></div>
+  </div>
+
+  <div class="card">
+    <h2>🔒 الخصوصية</h2>
+    <div class="step"><div class="step-num">✓</div><div>لا نجمع أي بيانات شخصية</div></div>
+    <div class="step"><div class="step-num">✓</div><div>الموقع الجغرافي مجهول الهوية تماماً</div></div>
+    <div class="step"><div class="step-num">✓</div><div>المشاركة اختيارية — يمكن إيقافها في أي وقت</div></div>
+    <div class="step"><div class="step-num">✓</div><div>البيانات تُحذف تلقائياً بعد 24 ساعة</div></div>
+  </div>
+
+  <div class="card">
+    <h2>💬 شاركنا رأيك</h2>
+    <p style="margin-bottom:16px">تجربتك تساعدنا على تحسين التطبيق</p>
+    <a href="https://forms.google.com/REPLACE_WITH_FORM_LINK" class="feedback-btn">📝 شارك تجربتك (دقيقة واحدة فقط)</a>
+  </div>
+
+</div>
+
+<footer>
+  <p>🚃 ترام الجزائر — مشروع مجتمعي مفتوح المصدر</p>
+  <p style="margin-top:8px"><a href="https://github.com/theATCweb/tram-alger" style="color:#00695C">GitHub</a></p>
+</footer>
+
+</body>
+</html>
