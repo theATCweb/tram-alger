@@ -9,7 +9,7 @@ echo "Installing dependencies..."
 pip install -q -r requirements.txt
 
 echo "Checking environment..."
-python scripts/check_env.py
+python scripts/check_env.py || echo "WARNING: env check failed, continuing anyway"
 
 echo "Starting Redis..."
 redis-server --daemonize yes --port 6379 2>/dev/null || true

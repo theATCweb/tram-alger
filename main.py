@@ -20,14 +20,16 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    """Initialize database on startup (graceful if unavailable)."""
+    """Startup: create tables if DB available, skip if not."""
     try:
         async with engine.begin() as conn:
             await conn.run_sync(Base.metadata.create_all)
-        print("Database connected")
+        print("Database tables ready")
     except Exception as e:
-        print(f"Database not available at startup: {e}")
-        print("Endpoints requiring DB will return 503 until connection is restored")
+        print(f"WARNING: Database not available at startup: {e}")
+        print("App will start anyway - endpoints will return 503 until DB connects")
+    import subprocess
+    subprocess.Popen(["python", "scripts/seed_db.py"])
     yield
 
 
