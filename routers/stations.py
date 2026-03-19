@@ -32,7 +32,12 @@ async def get_stations(
     """Get all stations, optionally filtered by route."""
     try:
         stmt = select(Station)
-        if route_id:
+        if route_id is None:
+            from sqlalchemy import select
+            from models.models import Route
+            subq = select(Route.id).where(Route.is_active == True).limit(1)
+            stmt = stmt.where(Station.route_id.in_(subq))
+        elif route_id:
             stmt = stmt.where(Station.route_id == route_id)
         stmt = stmt.order_by(Station.sequence)
         result = await db.execute(stmt)
