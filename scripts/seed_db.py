@@ -52,7 +52,7 @@ STATIONS_LINE1 = [
 
 async def seed_database():
     """Seed the database with routes, stations, and schedule."""
-    db_url = os.getenv("DATABASE_URL", "").replace("postgresql+asyncpg://", "postgresql://")
+    db_url = os.getenv("DATABASE_URL", "").replace("postgresql+asyncpg://", "postgresql://").replace("postgres://", "postgresql://")
     conn = await asyncpg.connect(db_url)
 
     try:

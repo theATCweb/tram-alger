@@ -26,15 +26,23 @@ async def lifespan(app: FastAPI):
             await conn.run_sync(Base.metadata.create_all)
         print("Database tables ready")
 
-        import subprocess
-        result = subprocess.run(
-            ["python", "scripts/seed_db.py"],
-            capture_output=True, text=True, timeout=60
-        )
-        if result.returncode == 0:
-            print("Database seeding completed")
-        else:
-            print(f"Seeding output: {result.stdout[:200]}")
+        from core.database import AsyncSessionLocal
+        from sqlalchemy import text
+        from scripts.seed_db import seed_database
+
+        try:
+            async with AsyncSessionLocal() as session:
+                count = await session.execute(text("SELECT COUNT(*) FROM stations"))
+                total = count.scalar()
+                if total == 0:
+                    print("Database empty - running seed...")
+                    await seed_database()
+                    print("Seeding complete!")
+                else:
+                    print(f"Database has {total} stations - skipping seed")
+        except Exception as e:
+            print(f"Seed check error: {e}")
+
     except Exception as e:
         print(f"WARNING: Database not available at startup: {e}")
         print("App will start anyway - endpoints will return 503 until DB connects")

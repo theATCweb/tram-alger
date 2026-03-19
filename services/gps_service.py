@@ -27,9 +27,9 @@ async def process_gps_ping(
     """
     Process an incoming GPS ping:
     1. Hash the device token
-    2. Push to Redis ring buffer
-    3. Log to PostgreSQL (async, non-blocking)
-    4. Invalidate nearby ETA caches
+    2. Push to Redis ring buffer (optional)
+    3. Log to PostgreSQL
+    4. Invalidate nearby ETA caches (optional)
     """
     session_hash = hash_device_token(ping.device_token)
 
@@ -43,7 +43,10 @@ async def process_gps_ping(
         "sequence": 0
     }
 
-    await push_gps_ping(ping.route_id, ping.direction, ping_data)
+    try:
+        await push_gps_ping(ping.route_id, ping.direction, ping_data)
+    except Exception:
+        pass
 
     db_ping = GPSPing(
         session_hash=session_hash,
@@ -58,6 +61,9 @@ async def process_gps_ping(
     db.add(db_ping)
     await db.commit()
 
-    await invalidate_eta_cache(ping.route_id, ping.direction)
+    try:
+        await invalidate_eta_cache(ping.route_id, ping.direction)
+    except Exception:
+        pass
 
     return True

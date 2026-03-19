@@ -141,9 +141,12 @@ async def calculate_eta(
     Main ETA calculation function with caching.
     Tries GPS first, falls back to schedule.
     """
-    cached = await get_cached_eta(station_id, direction)
-    if cached:
-        return ETAResponse(**cached)
+    try:
+        cached = await get_cached_eta(station_id, direction)
+        if cached:
+            return ETAResponse(**cached)
+    except Exception:
+        pass
 
     stmt = select(Station).where(Station.id == station_id).limit(1)
     result = await db.execute(stmt)
@@ -158,9 +161,13 @@ async def calculate_eta(
             message="Station not found"
         )
 
-    gps_result = await get_gps_based_eta(
-        route_id, direction, station_id, station.lat, station.lng, station.sequence
-    )
+    gps_result = None
+    try:
+        gps_result = await get_gps_based_eta(
+            route_id, direction, station_id, station.lat, station.lng, station.sequence
+        )
+    except Exception:
+        pass
 
     if gps_result:
         eta_dt, confidence = gps_result
@@ -183,5 +190,9 @@ async def calculate_eta(
             confidence=round(confidence, 2)
         )
 
-    await set_cached_eta(station_id, direction, response.model_dump())
+    try:
+        await set_cached_eta(station_id, direction, response.model_dump())
+    except Exception:
+        pass
+
     return response
