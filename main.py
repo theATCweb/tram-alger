@@ -137,3 +137,16 @@ async def landing():
     if os.path.exists(landing_path):
         return FileResponse(landing_path)
     return {"error": "landing.html not found"}
+
+
+@app.get("/download", include_in_schema=False)
+async def download_apk():
+    """Serve the APK file for download."""
+    apk_path = os.path.join(os.path.dirname(__file__), "app-release.apk")
+    if os.path.exists(apk_path):
+        return FileResponse(
+            apk_path,
+            media_type="application/vnd.android.package-archive",
+            filename="tram-alger.apk"
+        )
+    return {"error": "APK not found"}
