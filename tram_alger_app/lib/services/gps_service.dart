@@ -3,8 +3,9 @@ import 'package:geolocator/geolocator.dart';
 import '../core/config.dart';
 
 class GpsService {
-  StreamSubscription<Position>? _positionSubscription;
+  StreamSubscription<Position>? _positionStream;
   Position? _lastPosition;
+  void Function(Position)? _onPositionUpdate;
 
   Future<bool> checkPermission() async {
     bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
@@ -24,20 +25,21 @@ class GpsService {
   Position? get lastPosition => _lastPosition;
 
   void startTracking(void Function(Position) onPosition) {
-    _positionSubscription = Geolocator.getPositionStream(
+    _onPositionUpdate = onPosition;
+    _positionStream = Geolocator.getPositionStream(
       locationSettings: const LocationSettings(
         accuracy: LocationAccuracy.medium,
         distanceFilter: 30,
       ),
-    ).listen((position) {
-      _lastPosition = position;
-      onPosition(position);
+    ).listen((Position position) {
+      _onPositionUpdate!(position);
     });
   }
 
   void stopTracking() {
-    _positionSubscription?.cancel();
-    _positionSubscription = null;
+    _positionStream?.cancel();
+    _positionStream = null;
+    _onPositionUpdate = null;
   }
 
   bool isMoving(Position position) {
@@ -48,11 +50,7 @@ class GpsService {
     try {
       final hasPermission = await checkPermission();
       if (!hasPermission) return null;
-      return await Geolocator.getCurrentPosition(
-        locationSettings: const LocationSettings(
-          accuracy: LocationAccuracy.medium,
-        ),
-      );
+      return await Geolocator.getCurrentPosition();
     } catch (e) {
       return null;
     }
