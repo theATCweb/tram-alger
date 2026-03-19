@@ -21,14 +21,27 @@ class Station {
 
   factory Station.fromJson(Map<String, dynamic> json) {
     return Station(
-      id: json['id'],
-      name: json['name'],
-      nameAr: json['name_ar'],
+      id: json['id'] as int,
+      name: json['name'] as String,
+      nameAr: json['name_ar'] as String?,
       lat: (json['lat'] as num).toDouble(),
       lng: (json['lng'] as num).toDouble(),
-      sequence: json['sequence'],
-      routeId: json['route_id'],
-      isTerminal: json['is_terminal'],
+      sequence: json['sequence'] as int,
+      routeId: json['route_id'] as int,
+      isTerminal: json['is_terminal'] as bool,
     );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'name': name,
+      'name_ar': nameAr,
+      'lat': lat,
+      'lng': lng,
+      'sequence': sequence,
+      'route_id': routeId,
+      'is_terminal': isTerminal,
+    };
   }
 }

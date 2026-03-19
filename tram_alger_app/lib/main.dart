@@ -1,7 +1,18 @@
 import 'package:flutter/material.dart';
-import 'screens/home_screen.dart';
+import 'package:provider/provider.dart';
+import 'core/theme.dart';
+import 'providers/connectivity_provider.dart';
+import 'providers/stations_provider.dart';
+import 'providers/eta_provider.dart';
+import 'providers/gps_tracking_provider.dart';
+import 'services/cache_service.dart';
+import 'services/notification_service.dart';
+import 'screens/home/home_screen.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await CacheService.init();
+  await NotificationService.init();
   runApp(const TramAlgerApp());
 }
 
@@ -10,22 +21,19 @@ class TramAlgerApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Tram Alger',
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        primaryColor: const Color(0xFF1B5E20),
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: const Color(0xFF1B5E20),
-          brightness: Brightness.light,
-        ),
-        appBarTheme: const AppBarTheme(
-          backgroundColor: Color(0xFF1B5E20),
-          foregroundColor: Colors.white,
-          elevation: 0,
-        ),
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => ConnectivityProvider()),
+        ChangeNotifierProvider(create: (_) => StationsProvider()),
+        ChangeNotifierProvider(create: (_) => EtaProvider()),
+        ChangeNotifierProvider(create: (_) => GpsTrackingProvider()),
+      ],
+      child: MaterialApp(
+        title: 'Tram Alger',
+        debugShowCheckedModeBanner: false,
+        theme: AppTheme.lightTheme,
+        home: const HomeScreen(),
       ),
-      home: const HomeScreen(),
     );
   }
 }
