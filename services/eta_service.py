@@ -101,7 +101,7 @@ async def get_schedule_based_eta(
     stmt = select(Schedule).where(
         Schedule.station_id == station_id,
         Schedule.direction == direction,
-        Schedule.arrival_min > current_minute
+        Schedule.arrival_min >= current_minute
     ).order_by(Schedule.arrival_min).limit(1)
 
     result = await db.execute(stmt)
@@ -113,6 +113,19 @@ async def get_schedule_based_eta(
         )
         if eta < now:
             eta += timedelta(days=1)
+        seconds_away = int((eta - now).total_seconds())
+        if seconds_away > 7200:
+            stmt_next = select(Schedule).where(
+                Schedule.station_id == station_id,
+                Schedule.direction == direction,
+                Schedule.arrival_min > current_minute
+            ).order_by(Schedule.arrival_min).limit(1)
+            result_next = await db.execute(stmt_next)
+            next_departure = result_next.scalar_one_or_none()
+            if next_departure:
+                eta = now.replace(hour=0, minute=0, second=0, microsecond=0) + timedelta(
+                    days=1, minutes=next_departure.arrival_min
+                )
     else:
         stmt_wrap = select(Schedule).where(
             Schedule.station_id == station_id,
